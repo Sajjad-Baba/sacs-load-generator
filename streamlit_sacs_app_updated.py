@@ -4,13 +4,14 @@ import streamlit.components.v1 as components
 import pandas as pd
 import math
 
+# Set page config FIRST
+st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
+
 # Inject Plausible Analytics script
 plausible_script = """
 <script defer data-domain='sacs-joint-load-generator.onrender.com' src='https://plausible.io/js/script.js'></script>
 """  # noqa
 components.html(plausible_script, height=0)
-
-st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
 
 # Sidebar About Me
 with st.sidebar:
