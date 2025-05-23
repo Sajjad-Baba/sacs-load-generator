@@ -11,7 +11,7 @@ with st.sidebar:
     st.markdown("""
 👨‍💻 **Sajjad Babamohammadi**  
 Structural Engineer | Offshore | FEM  
-[LinkedIn](https://www.linkedin.com/in/sajjadbabamohammadi/)
+[LinkedIn](https://www.linkedin.com/in/sajjad-b-7aab1b172/)
     """)
 
 st.title("SACS Joint Load Generator")
