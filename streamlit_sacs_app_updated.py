@@ -2,9 +2,17 @@
 import streamlit as st
 import pandas as pd
 import math
-import io
 
 st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
+
+# Sidebar About Me
+with st.sidebar:
+    st.markdown("### About Me")
+    st.markdown("""
+👨‍💻 **Sajjad Babamohammadi**  
+Structural Engineer | Offshore | FEM  
+[LinkedIn](https://www.linkedin.com/in/sajjadbabamohammadi/)
+    """)
 
 st.title("SACS Joint Load Generator")
 st.caption("Created by Sajjad Babamohammadi")
@@ -12,23 +20,18 @@ st.caption("Created by Sajjad Babamohammadi")
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 rounded_values_log = []
 
-generate_button_disabled = uploaded_file is None
-
-
 def round_to_seven_chars(value_str: str) -> str:
     try:
         num = float(value_str)
         for precision in range(6, -1, -1):
             rounded = round(num, precision)
-            as_str = f"{rounded:.{precision}f}".rstrip('0').rstrip(
-                '.') if '.' in f"{rounded:.{precision}f}" else f"{rounded:.{precision}f}"
+            as_str = f"{rounded:.{precision}f}".rstrip('0').rstrip('.') if '.' in f"{rounded:.{precision}f}" else f"{rounded:.{precision}f}"
             if len(as_str) <= 7:
                 return as_str.rjust(7)
         rough = f"{round(num)}"
         return rough[:7].rjust(7)
     except:
         return "   0.0"
-
 
 def format_number(value: str) -> str:
     raw = value
@@ -37,10 +40,8 @@ def format_number(value: str) -> str:
         return value.rjust(7)
     rounded_str = round_to_seven_chars(value)
     if rounded_str.strip() != value:
-        rounded_values_log.append(
-            f"'{raw}' was rounded to '{rounded_str.strip()}'")
+        rounded_values_log.append(f"'{raw}' was rounded to '{rounded_str.strip()}'")
     return rounded_str
-
 
 def format_load_line(joint_name, fx, fy, fz, mx, my, mz, load_id):
     return (
@@ -55,7 +56,6 @@ def format_load_line(joint_name, fx, fy, fz, mx, my, mz, load_id):
         "GLOB JOIN" + " " * 3 +
         load_id.ljust(8)
     ).ljust(81)
-
 
 if uploaded_file:
     df = pd.read_excel(uploaded_file)
@@ -72,26 +72,23 @@ if uploaded_file:
 
     try:
         load_cond_col = smart_col("Load", "Condition")
-        load_id_col = smart_col("Load", "ID")
-        joint_col = smart_col("Joint", "Name")
-        fx_col = smart_col("FORCE(X)")
-        fy_col = smart_col("FORCE(Y)")
-        fz_col = smart_col("FORCE(Z)")
-        mx_col = smart_col("MOMENT(X)")
-        my_col = smart_col("MOMENT(Y)")
-        mz_col = smart_col("MOMENT(Z)")
+        load_id_col   = smart_col("Load", "ID")
+        joint_col     = smart_col("Joint", "Name")
+        fx_col        = smart_col("FORCE(X)")
+        fy_col        = smart_col("FORCE(Y)")
+        fz_col        = smart_col("FORCE(Z)")
+        mx_col        = smart_col("MOMENT(X)")
+        my_col        = smart_col("MOMENT(Y)")
+        mz_col        = smart_col("MOMENT(Z)")
 
         output_lines = []
         current_condition = None
         rounded_values_log.clear()
 
         for _, row in df.iterrows():
-            load_condition = str(row[load_cond_col]).strip(
-            ) if not pd.isna(row[load_cond_col]) else ""
-            load_id = str(row[load_id_col]).strip(
-            ) if not pd.isna(row[load_id_col]) else ""
-            joint = str(row[joint_col]).strip() if not pd.isna(
-                row[joint_col]) else ""
+            load_condition = str(row[load_cond_col]).strip() if not pd.isna(row[load_cond_col]) else ""
+            load_id = str(row[load_id_col]).strip() if not pd.isna(row[load_id_col]) else ""
+            joint = str(row[joint_col]).strip() if not pd.isna(row[joint_col]) else ""
 
             if load_condition:
                 current_condition = load_condition
@@ -109,18 +106,19 @@ if uploaded_file:
             output_lines.append(line)
 
         result_txt = "\n".join(output_lines)
-        st.download_button("Download SACS File", result_txt,
-                           file_name="sacs_output.txt", disabled=False)
+        st.download_button("Download SACS File", result_txt, file_name="sacs_output.txt")
 
         if rounded_values_log:
             log_text = "Rounded Values:\n" + "\n".join(rounded_values_log)
-            st.download_button("Download Rounding Log", log_text,
-                               file_name="rounding_log.txt", disabled=False)
+            st.download_button("Download Rounding Log", log_text, file_name="rounding_log.txt")
 
     except Exception as e:
         st.error(f"Error: {e}")
-else:
-    st.download_button("Download SACS File",
-                       "Please upload a file first.", disabled=True)
-    st.download_button("Download Rounding Log",
-                       "Please upload a file first.", disabled=True)
+
+# Legal disclaimer footer
+st.markdown(
+    "<div style='text-align: center; font-size: 0.75rem; color: gray; margin-top: 2rem;'>"
+    "⚠️ Although this tool has been carefully designed and tested, the responsibility for validating results and ensuring compliance with engineering standards lies with the user."
+    "</div>",
+    unsafe_allow_html=True
+)
