@@ -1,7 +1,14 @@
 
 import streamlit as st
+import streamlit.components.v1 as components
 import pandas as pd
 import math
+
+# Inject Plausible Analytics script
+plausible_script = """
+<script defer data-domain='sacs-joint-load-generator.onrender.com' src='https://plausible.io/js/script.js'></script>
+"""  # noqa
+components.html(plausible_script, height=0)
 
 st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
 
@@ -11,7 +18,7 @@ with st.sidebar:
     st.markdown("""
 👨‍💻 **Sajjad Babamohammadi**  
 Structural Engineer | Offshore | FEM  
-[LinkedIn](https://www.linkedin.com/in/sajjad-b-7aab1b172/)
+[LinkedIn](https://www.linkedin.com/in/sajjadbabamohammadi/)
     """)
 
 st.title("SACS Joint Load Generator")
@@ -19,6 +26,16 @@ st.caption("Created by Sajjad Babamohammadi")
 
 uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
 rounded_values_log = []
+
+# Track upload event
+if uploaded_file:
+    components.html("""
+        <script>
+            if (typeof plausible === "function") {
+                plausible("Upload File");
+            }
+        </script>
+    """, height=0)
 
 def round_to_seven_chars(value_str: str) -> str:
     try:
@@ -106,11 +123,25 @@ if uploaded_file:
             output_lines.append(line)
 
         result_txt = "\n".join(output_lines)
-        st.download_button("Download SACS File", result_txt, file_name="sacs_output.txt")
+        if st.download_button("Download SACS File", result_txt, file_name="sacs_output.txt"):
+            components.html("""
+                <script>
+                    if (typeof plausible === "function") {
+                        plausible("Download SACS File");
+                    }
+                </script>
+            """, height=0)
 
         if rounded_values_log:
             log_text = "Rounded Values:\n" + "\n".join(rounded_values_log)
-            st.download_button("Download Rounding Log", log_text, file_name="rounding_log.txt")
+            if st.download_button("Download Rounding Log", log_text, file_name="rounding_log.txt"):
+                components.html("""
+                    <script>
+                        if (typeof plausible === "function") {
+                            plausible("Download Log");
+                        }
+                    </script>
+                """, height=0)
 
     except Exception as e:
         st.error(f"Error: {e}")
