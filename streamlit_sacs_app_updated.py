@@ -4,10 +4,9 @@ import streamlit.components.v1 as components
 import pandas as pd
 import math
 
-# Set page config FIRST
 st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
 
-# Inject Plausible Analytics script
+# Inject Plausible script
 plausible_script = """
 <script defer data-domain='sacs-joint-load-generator.onrender.com' src='https://plausible.io/js/script.js'></script>
 """  # noqa
@@ -19,16 +18,40 @@ with st.sidebar:
     st.markdown("""
 👨‍💻 **Sajjad Babamohammadi**  
 Structural Engineer | Offshore | FEM  
-[LinkedIn](https://www.linkedin.com/in/sajjadbabamohammadi/)
+[LinkedIn](https://www.linkedin.com/in/sajjad-b-7aab1b172/)
     """)
 
 st.title("SACS Joint Load Generator")
 st.caption("Created by Sajjad Babamohammadi")
 
-uploaded_file = st.file_uploader("Upload Excel File", type=["xlsx"])
+# Quick Guide
+with st.expander("📘 Quick Start Guide"):
+    st.markdown("""
+**What this app does**  
+Converts Excel joint load definitions into `.txt` output for SACS Datagen.
+
+**Excel format (Header row required):**  
+- Load Condition  
+- Load ID  
+- Joint Name  
+- FORCE(X), FORCE(Y), FORCE(Z)  
+- MOMENT(X), MOMENT(Y), MOMENT(Z)
+
+**How to use:**  
+1. Download the sample Excel below
+2. Replace with your actual values
+3. Upload the Excel file
+4. Download the SACS-ready `.txt` output
+
+📝 *Each load condition can include multiple joints below it until an empty row appears.*
+    """)
+
+with open("SACS_Load_Sample.xlsx", "rb") as sample_file:
+    st.download_button("📎 Download Sample Excel File", sample_file, file_name="SACS_Load_Sample.xlsx")
+
+uploaded_file = st.file_uploader("Upload Your Excel File", type=["xlsx"])
 rounded_values_log = []
 
-# Track upload event
 if uploaded_file:
     components.html("""
         <script>
