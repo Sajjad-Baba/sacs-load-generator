@@ -3,6 +3,7 @@ import streamlit as st
 import streamlit.components.v1 as components
 import pandas as pd
 import math
+import io
 
 st.set_page_config(page_title="SACS Joint Load Generator", layout="centered")
 
@@ -46,8 +47,27 @@ Converts Excel joint load definitions into `.txt` output for SACS Datagen.
 📝 *Each load condition can include multiple joints below it until an empty row appears.*
     """)
 
-with open("SACS_Load_Sample.xlsx", "rb") as sample_file:
-    st.download_button("📎 Download Sample Excel File", sample_file, file_name="SACS_Load_Sample.xlsx")
+# Generate sample Excel in-memory for download
+sample_df = pd.DataFrame([
+    ["S100", "LD01", "JN01", 100.0, -50.0, 25.5, 10.0, -5.0, 1.0],
+    ["",     "LD02", "JN02", 200.0, 0.0, -30.5, 15.0, 0.0, -1.0],
+    [None] * 9,
+    ["S200", "LD03", "JN03", -500.0, 150.0, 60.0, 0.0, -5.0, 3.0],
+    ["",     "LD04", "JN04", 320.0, -100.0, 0.0, -2.0, 2.0, 0.5],
+], columns=[
+    "Load Condition", "Load ID", "Joint Name",
+    "FORCE(X)", "FORCE(Y)", "FORCE(Z)",
+    "MOMENT(X)", "MOMENT(Y)", "MOMENT(Z)"
+])
+excel_buffer = io.BytesIO()
+sample_df.to_excel(excel_buffer, index=False)
+excel_bytes = excel_buffer.getvalue()
+st.download_button(
+    "📎 Download Sample Excel File",
+    data=excel_bytes,
+    file_name="SACS_Load_Sample.xlsx",
+    mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+)
 
 uploaded_file = st.file_uploader("Upload Your Excel File", type=["xlsx"])
 rounded_values_log = []
