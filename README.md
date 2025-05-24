@@ -4,7 +4,7 @@ A free, web-based tool to automate the generation of **SACS Datagen joint load i
 
 ✅ Built for offshore structural engineers.  
 ✅ Created by [Sajjad Babamohammadi](https://www.linkedin.com/in/sajjad-b-7aab1b172/)  
-✅ Use it instantly here: [🌐 Launch Web App]([https://your-web-link.com](https://sacs-joint-load-generator.onrender.com/)) 
+✅ Use it instantly here: [🌐 Launch Web App](https://sacs-joint-load-generator.onrender.com/) 
 
 ---
 
